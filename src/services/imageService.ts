@@ -1,12 +1,17 @@
+import ImageMetadataMessage from "../types/imageMetadataMessage";
+
 const messageQueue = require('../utils/messageQueue');
 const helpers = require('../utils/helpers');
 const imageModel = require('../models/imageModel');
 
 
-const uploadImage = async (imageUrl: string, imageName: string) => {
+const uploadImage = async (imageFileBuffer: any) => {
+    const imageName = helpers.generateImageName();
     const taskId = helpers.generateTaskId(imageName);
   
-    const imageMetadataMessage = {
+    const imageUrl = await helpers.uploadImageToCloudinary(imageFileBuffer, imageName);
+
+    const imageMetadataMessage: ImageMetadataMessage = {
         taskId,
         imageUrl,
         imageName,
@@ -17,7 +22,6 @@ const uploadImage = async (imageUrl: string, imageName: string) => {
         await messageQueue.sendMessage(imageMetadataMessage);
         
         return new Promise((resolve) => {
-            // assume that the worker completes the task asynchronously.
             resolve({ imageUrl, taskId, imageName });
         });
     } catch (error) {

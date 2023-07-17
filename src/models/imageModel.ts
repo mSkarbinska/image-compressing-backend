@@ -1,3 +1,5 @@
+import ImageMetadataMessage from "../types/imageMetadataMessage";
+
 const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
@@ -24,7 +26,7 @@ const imageMetadataSchema = new Schema({
 const ImageMetadata = mongoose.model('ImageMetadata', imageMetadataSchema)
 
 
-const saveImageMetadata = async (imageMetadataMessage) => {
+const saveImageMetadata = async (imageMetadataMessage: ImageMetadataMessage ) => {
     try {
         const imageMetadata = new ImageMetadata(imageMetadataMessage);
         const result = await imageMetadata.save();
