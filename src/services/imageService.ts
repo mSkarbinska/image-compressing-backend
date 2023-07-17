@@ -1,44 +1,55 @@
 const messageQueue = require('../utils/messageQueue');
-const ImageMetadata = require('../models/imageModel');
+const helpers = require('../utils/helpers');
+const imageModel = require('../models/imageModel');
 
-const compressImage = async (imageUrl: string, imageName: string) => {
-    const taskId = generateTaskId(imageName);
+
+const uploadImage = async (imageUrl: string, imageName: string) => {
+    const taskId = helpers.generateTaskId(imageName);
   
-    const message = {
+    const imageMetadataMessage = {
         taskId,
         imageUrl,
         imageName,
     };
-
-    const imageMetadata = new ImageMetadata({
-        ...message})
     
     try {
-        imageMetadata.save().then((result:any) => {
-            console.log(result)
-        }).catch((error:any) => {
-            console.log(error)
-            throw new Error('Failed to save image metadata to the database.')
-        })
-
-        await messageQueue.sendMessage(message);
+        await imageModel.saveImageMetadata(imageMetadataMessage)
+        await messageQueue.sendMessage(imageMetadataMessage);
         
         return new Promise((resolve) => {
             // assume that the worker completes the task asynchronously.
-            resolve({ taskId });
+            resolve({ imageUrl, taskId, imageName });
         });
     } catch (error) {
         console.log(error)
         throw new Error('Failed to send image compression task to the queue.');
     }
 }
-  
 
-const generateTaskId = (imageName:string) => {
-    return '12345'
+
+const getImageById = async (id: string) => {
+    try {
+        const imageMetadata = await imageModel.ImageMetadata.findById(id);
+        return imageMetadata;
+    } catch (error) {
+        console.log(error)
+        throw new Error('Failed to get image metadata from the database.');
+    }
+}
+
+
+const getImageByTaskId = async (taskId: string) => {
+    try {
+        const imageMetadata = await imageModel.ImageMetadata.findOne({ taskId });
+        return imageMetadata;
+    } catch (error) {
+        console.log(error)
+        throw new Error('Failed to get image metadata from the database.');
+    }
 }
 
 
 module.exports = {
-    compressImage
+    uploadImage,
+    getImageById
 };

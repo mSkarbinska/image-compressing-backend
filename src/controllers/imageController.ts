@@ -1,20 +1,23 @@
 import express from 'express';
+
 const imageService = require('../services/imageService');
 
 
-const compressImage = async (req: express.Request, res: express.Response) => {
+const uploadImage = async (req: {file: Express.Multer.File}, res: express.Response) => {
     try {
-      const { imageUrl='aa', imageName='bb' } = req.body
-      const result = await imageService.compressImage(imageUrl, imageName);
-      return res.status(200).send({ taskId: result.taskId });
+        const imageFile = req.file.buffer; 
+
+        const result = await imageService.uploadImage(imageFile); // {ImageUrl, taskId, imageName (generated like docker names)}
+
+        return res.status(200).send({ taskId: result.taskId });
     } catch (error) {
         console.log(error)
-      return res.status(500).send({ error: "Image compression failed." });
+        return res.status(500).send({ error: "Image compression failed." });
     }
   }
 
 
 module.exports = {
-    compressImage
+    uploadImage
 };
 

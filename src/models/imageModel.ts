@@ -21,4 +21,22 @@ const imageMetadataSchema = new Schema({
 });
 
 
-module.exports = mongoose.model('ImageMetadata', imageMetadataSchema)
+const ImageMetadata = mongoose.model('ImageMetadata', imageMetadataSchema)
+
+
+const saveImageMetadata = async (imageMetadataMessage) => {
+    try {
+        const imageMetadata = new ImageMetadata(imageMetadataMessage);
+        const result = await imageMetadata.save();
+        console.log(result);
+    } catch (error) {
+        console.log(error);
+        throw new Error('Failed to save image metadata to the database.');
+    }
+};
+
+
+module.exports = {
+    saveImageMetadata,
+    ImageMetadata
+}
