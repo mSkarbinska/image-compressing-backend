@@ -1,6 +1,6 @@
-import ImageMetadataMessage from "../types/imageMetadataMessage";
+import ImageMetadataMessage from '../types/imageMetadataMessage';
 
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
@@ -9,7 +9,7 @@ const imageMetadataSchema = new Schema({
         type: String,
         required: true,
     },
-    thumbnailUrl: String,
+    compressedUrl: String,
     imageName: {
         type: String,
         required: true,
@@ -19,7 +19,7 @@ const imageMetadataSchema = new Schema({
         unique: true,
     }
 },{
-    timestamps: true 
+    timestamps: true
 });
 
 
@@ -30,6 +30,7 @@ const saveImageMetadata = async (imageMetadataMessage: ImageMetadataMessage ) =>
     try {
         const imageMetadata = new ImageMetadata(imageMetadataMessage);
         const result = await imageMetadata.save();
+        return result._id
         console.log(result);
     } catch (error) {
         console.log(error);

@@ -1,14 +1,13 @@
-import ImageMetadataMessage from "../types/imageMetadataMessage";
+import ImageMetadataMessage from '../types/imageMetadataMessage';
 
 const messageQueue = require('../utils/messageQueue');
 const helpers = require('../utils/helpers');
 const imageModel = require('../models/imageModel');
 
-
 const uploadImage = async (imageFileBuffer: any) => {
     const imageName = helpers.generateImageName();
     const taskId = helpers.generateTaskId(imageName);
-  
+
     const imageUrl = await helpers.uploadImageToCloudinary(imageFileBuffer, imageName);
 
     const imageMetadataMessage: ImageMetadataMessage = {
@@ -16,11 +15,11 @@ const uploadImage = async (imageFileBuffer: any) => {
         imageUrl,
         imageName,
     };
-    
+
     try {
-        await imageModel.saveImageMetadata(imageMetadataMessage)
-        await messageQueue.sendMessage(imageMetadataMessage);
-        
+        const id = await imageModel.saveImageMetadata(imageMetadataMessage)
+        await messageQueue.sendMessage({...imageMetadataMessage, imageDataId: id});
+
         return new Promise((resolve) => {
             resolve({ imageUrl, taskId, imageName });
         });
