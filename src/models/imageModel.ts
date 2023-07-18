@@ -9,7 +9,10 @@ const imageMetadataSchema = new Schema({
         type: String,
         required: true,
     },
-    compressedUrl: String,
+    compressedUrl: {
+        type: String,
+        default: null,
+    },
     imageName: {
         type: String,
         required: true,

@@ -10,13 +10,12 @@ import io
 from dotenv import load_dotenv
 import os
 import requests
-
 load_dotenv()
-
+from bson import ObjectId
 
 def worker_function(redis_host, redis_port, queue_name, cloud_name, api_key, api_secret, mongo_url):
     def update_field_by_id(collection, object_id, field_name, new_field_value):
-        filter = {"_id": object_id}
+        filter = {"_id": ObjectId(object_id)}
         
         update = {"$set": {field_name: new_field_value}}
         
@@ -24,8 +23,10 @@ def worker_function(redis_host, redis_port, queue_name, cloud_name, api_key, api
         
         if result.modified_count > 0:
             print("Field updated successfully.")
+            return
         else:
             print("No matching document found or the field value was the same.")
+            return
 
 
     def deserialize_message(message):
@@ -51,10 +52,9 @@ def worker_function(redis_host, redis_port, queue_name, cloud_name, api_key, api
         )
 
         client = MongoClient(mongo_url)
-        collection = client.db['imagedatas']
+        collection = client.test.imagemetadatas
 
         if queue_item is not None:
-            print(queue_item)
             image_url, image_name, task_id, image_id = deserialize_message(queue_item)
 
             print(f"Received message: {image_url} {image_name} {task_id} {image_id}")
