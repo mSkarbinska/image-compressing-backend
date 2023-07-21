@@ -1,38 +1,35 @@
 import {CompressingTask, saveCompressingTaskToDb} from '../models/CompressingTask'
 import {TaskResponse} from '../types/TaskResponse'
 
-interface SaveCompressingTaskResponse {
-    taskId: string,
-}
-export const saveCompressingTask = async (imageId: string):Promise<SaveCompressingTaskResponse> => {
-    try {
-        const taskId = await saveCompressingTaskToDb(imageId)
-        return new Promise((resolve) => {
-            resolve({
-                taskId
-            })
+export const saveCompressingTask = async (imageId: string):Promise<string> => {
+    return await saveCompressingTaskToDb(imageId)
+        .catch((error) => {
+            console.log(error)
+            throw new Error('Failed to save compressing task to the database.')
         })
-    } catch (error) {
-        console.log(error)
-        throw new Error('Failed to save compressing task to the database.')
-    }
 }
 
 export const getCompressingTaskById = async (id: string): Promise<TaskResponse> => {
-    try {
-        const task = await CompressingTask.findById(id)
-        if (!task) {
-            throw new Error('Task not found.')
-        }
-        return new Promise((resolve) => {
-            resolve({
+    return await CompressingTask.findById(id)
+        .then(task => {
+            return {
                 id: task._id.toString(),
                 imageId: task.imageId?.toString() || '',
-                status: task.status,
-            })
+                status: task.status
+            }
         })
-    } catch (error) {
+        .catch((error) => {
+            console.log(error)
+            throw new Error('Failed to get compressing task from the database.')
+        })
+}
+
+
+export const getCompressingTaskStatusById = async (id: string): Promise<string> => {
+    return await CompressingTask.findById(id, {status: 1})
+        .then(task => task.status)
+        .catch((error) => {
         console.log(error)
-        throw new Error('Failed to get compressing task from the database.')
-    }
+        throw new Error('Failed to get compressing task status from the database.')
+    })
 }

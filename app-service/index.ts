@@ -7,6 +7,7 @@ import {config} from 'dotenv'
 
 import {imageRouter} from './src/routes/imageRoutes'
 import {taskRouter} from './src/routes/taskRoutes'
+import {notificationRouter} from './src/routes/notificationRoutes'
 
 config()
 
@@ -17,6 +18,7 @@ app.use(express.json())
 
 app.use('/image', imageRouter)
 app.use('/task', taskRouter)
+app.use('/notification', notificationRouter)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)

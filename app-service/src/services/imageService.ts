@@ -14,46 +14,47 @@ export const uploadImage = async (imageFileBuffer: Buffer): Promise<UploadImageR
     const imageUrl = await uploadImageToCloudinary(imageFileBuffer)
 
     const imageId = await saveImageMetadataToDb(imageUrl)
-    const {taskId} = await saveCompressingTask(imageId)
+    const taskId= await saveCompressingTask(imageId)
 
-    const message: QueueMessage = {imageId: imageId?.toString(), taskId: taskId?.toString(), imageUrl}
-    try {
-        await sendMessageToQueue(message)
+    const message: QueueMessage = {imageId: imageId.toString(), taskId: taskId.toString(), imageUrl}
 
-        return new Promise((resolve) => {
-            resolve(message)
-        })
-    } catch (error) {
-        console.log(error)
-        throw new Error('Failed to send image compression task to the queue.')
-    }
+    sendMessageToQueue(message)
+
+    return new Promise((resolve) => {
+        resolve({imageUrl, taskId, imageId} as UploadImageResponse)
+    })
 }
 
 export const getImageById = async (id: string): Promise<ImageMetadataResponse> => {
-    try {
-        const result = await ImageMetadata.findById(id)
-        if (!result) {
-            throw new Error('Image not found.')
-        }
-        return new Promise((resolve) => {
-            resolve({
-                id: result._id.toString(),
-                imageUrl: result.imageUrl,
-                compressedUrl: result.compressedUrl,
-                createdAt: result.createdAt.toString(),
-            })
+    return await ImageMetadata.findById(id)
+        .then(image => {
+            return {
+                id: image._id.toString(),
+                imageUrl: image.imageUrl,
+                compressedUrl: image.compressedUrl,
+                createdAt: image.createdAt.toString(),
+            } as ImageMetadataResponse
         })
-    } catch (error) {
-        console.log(error)
-        throw new Error('Failed to get image metadata from the database.')
-    }
+        .catch((error) => {
+            console.log(error)
+            throw new Error('Failed to get image metadata from the database.')
+        })
 }
 
 export const getImages = async (): Promise<ImageMetadataResponse[]> => {
-    try {
-        return await ImageMetadata.find()
-    } catch (error) {
-        console.log(error)
-        throw new Error('Failed to get images from the database.')
-    }
+    return await ImageMetadata.find()
+        .then(images => {
+            return images.map(image => {
+                return {
+                    id: image._id.toString(),
+                    imageUrl: image.imageUrl,
+                    compressedUrl: image.compressedUrl,
+                    createdAt: image.createdAt.toString(),
+                } as ImageMetadataResponse
+            })
+        })
+        .catch((error) => {
+            console.log(error)
+            throw new Error('Failed to get images from the database.')
+        })
 }
