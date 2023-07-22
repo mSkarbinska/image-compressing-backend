@@ -29,10 +29,10 @@ export const getImageById = async (id: string): Promise<ImageMetadataResponse> =
     return await ImageMetadata.findById(id)
         .then(image => {
             return {
-                id: image._id.toString(),
-                imageUrl: image.imageUrl,
-                compressedUrl: image.compressedUrl,
-                createdAt: image.createdAt.toString(),
+                id: image?._id.toString(),
+                imageUrl: image?.imageUrl,
+                compressedUrl: image?.compressedUrl,
+                createdAt: image?.createdAt.toString(),
             } as ImageMetadataResponse
         })
         .catch((error) => {
@@ -46,7 +46,7 @@ export const getImages = async (): Promise<ImageMetadataResponse[]> => {
         .then(images => {
             return images.map(image => {
                 return {
-                    id: image._id.toString(),
+                    id: image?._id.toString(),
                     imageUrl: image.imageUrl,
                     compressedUrl: image.compressedUrl,
                     createdAt: image.createdAt.toString(),
