@@ -9,7 +9,7 @@ const compressingTaskSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'completed', 'failed'],
+        enum: ['pending', 'completed', 'completed_with_errors', 'failed'],
         default: 'pending'
     }
 },{

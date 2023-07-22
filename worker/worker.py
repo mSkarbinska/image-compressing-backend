@@ -7,6 +7,7 @@ from message_processor import MessageProcessor
 from image_processor import ImageProcessor
 from cloudinary_client import CloudinaryClient
 from exceptions import *
+import logging
 
 load_dotenv()
 
@@ -18,24 +19,23 @@ def worker_function():
         cloudinary_client = CloudinaryClient(Config)
         image_processor = ImageProcessor(Config, cloudinary_client)
     except (RedisConnectionError, MongoDbConnectionError, CloudinaryConnectionError) as e:
-        print(f"Error occurred while connecting to external services: {e}")
+        logging.error(f"Error occurred while connecting to external services: {e}")
         sys.exit(1)
     except Exception as e:
-        print(f"Error occurred while initializing the worker: {e}")
+        logging.error(f"Error occurred while initializing the worker: {e}")
         sys.exit(1)
 
-    print("Worker started.")
+    logging.info("Worker started.")
 
     while True:
         image_url, task_id, image_id = None, None, None
-        compression_failed = False
 
         try:
             queue_message = redis_client.take_task_from_queue()
 
             image_url, task_id, image_id = MessageProcessor.deserialize_message(queue_message)
 
-            print(f"Received message: {image_url} {task_id} {image_id}")
+            logging.info(f"Received message: {image_url} {task_id} {image_id}")
 
             compressed_image_url = image_processor.process_image(image_url)
 
@@ -44,30 +44,21 @@ def worker_function():
 
             message = MessageProcessor.serialize_topic_message(compressed_image_url, task_id, image_id)
             redis_client.publish_result(message)
-        except DeserializeMessageError as e:
-            print(f"Error occurred while deserializing the message from queue: {e}")
-            compression_failed = True
-            pass
-        except (ProcessImageError, UnknownProcessImageError) as e:
-            print(f"Error occurred while processing the image: {e}")
-            compression_failed = True
-            pass
-        except UpdateFieldError as e:
-            print(f"Compression of image {image_id} was successful, but failed to update the database: {e}")
-            pass
-        except SerializeMessageError as e:
-            print(f"Compression of image {image_id} and db update was successful, but failed to serialize the message: {e}")
-            pass
-
-        if compression_failed:
+        except (ProcessImageError, UnknownProcessImageError, DeserializeMessageError) as e:
+            logging.error(e)
             mongo_client.update_task_status(task_id, 'failed')
+        except (UpdateFieldError, SerializeMessageError) as e:
+            logging.error(f"Compression of image {image_id} was successful, but an error occured: {e}")
+            mongo_client.update_task_status(task_id, 'completed_with_errors')
+
+
 
 
 if __name__ == '__main__':
     try:
         worker_function()
     except KeyboardInterrupt:
-        print("Worker stopped.")
+        logging.warn("Worker stopped.")
         sys.exit(1)
 
     # num_workers = multiprocessing.cpu_count()

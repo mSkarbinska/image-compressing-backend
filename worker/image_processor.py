@@ -1,5 +1,6 @@
 from PIL import Image
 import io
+import logging
 from exceptions import ImageDownloadError, OpenAndConvertImageError, CompressImageError, \
     ProcessImageError, UnknownProcessImageError
 
@@ -15,6 +16,9 @@ class ImageProcessor:
             image = self.open_and_convert_image(image_bytes)
             compressed_image_bytes = self.perform_image_compression(image)
             compressed_image_url = self.upload_compressed_image(compressed_image_bytes)
+
+            logging.info("Image processed successfully")
+
             return compressed_image_url
         except (ImageDownloadError, OpenAndConvertImageError, CompressImageError) as e:
             raise ProcessImageError(e)

@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from bson import ObjectId
+import logging
 from pymongo.errors import ConnectionFailure
 from exceptions import MongoDbConnectionError, UpdateFieldError, UpdateMongoDbObjectFieldError
 from helpers import is_valid_mongo_id
@@ -29,7 +30,7 @@ class MongoDbClient:
             result = collection.update_one(objects_filter, update)
 
             if result.modified_count > 0:
-                print(f'Field {field_name} updated successfully.')
+                logging.info(f'Field {field_name} updated successfully.')
             else:
                 raise UpdateFieldError(field_name)
         except Exception as e:

@@ -1,4 +1,5 @@
 import redis
+import logging
 from exceptions import RedisConnectionError
 
 
@@ -21,9 +22,9 @@ class RedisClient:
 
     def take_task_from_queue(self):
         result = self.client.blpop(self.tasks_queue_name)
-        print(f"Task taken from {self.tasks_queue_name} queue.")
+        logging.info(f"Task taken from {self.tasks_queue_name} queue.")
         return result[1]
 
     def publish_result(self, message):
         deliveries_count = self.client.publish(self.results_topic_name, message)
-        print(f"Message published to {self.results_topic_name} topic. {deliveries_count} consumers received the message.")
+        logging.info(f"Message published to {self.results_topic_name} topic. {deliveries_count} consumers received the message.")
