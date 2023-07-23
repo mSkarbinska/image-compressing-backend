@@ -1,12 +1,14 @@
-import {CompressingTask, saveCompressingTaskToDb} from '../models/CompressingTask'
+import {CompressingTask} from '../models/CompressingTask'
 import {TaskResponse} from '../types/TaskResponse'
 
 export const saveCompressingTask = async (imageId: string):Promise<string> => {
-    return await saveCompressingTaskToDb(imageId)
-        .catch((error) => {
-            console.log(error)
-            throw new Error('Failed to save compressing task to the database.')
-        })
+    try {
+        const compressingTask = new CompressingTask({ imageId })
+        return await compressingTask.save().then(task => task._id.toString())
+    } catch (error) {
+        console.log(error)
+        throw new Error('Failed to save compressing task to the database.')
+    }
 }
 
 export const getCompressingTaskById = async (id: string): Promise<TaskResponse> => {
@@ -20,7 +22,6 @@ export const getCompressingTaskById = async (id: string): Promise<TaskResponse> 
             }
         })
 }
-
 
 export const getCompressingTaskStatusById = async (id: string): Promise<string> => {
     return await CompressingTask.findById(id, { status: 1 })

@@ -1,0 +1,6 @@
+{
+  "testRegex": "((\\.|/*.)(test))\\.ts?$",
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "setupFilesAfterEnv": ["./setupTests.ts"]
+}

@@ -1,6 +1,6 @@
 import {sendMessageToQueue, QueueMessage} from '../utils/messageQueue'
-import {uploadImageToCloudinary} from '../utils/helpers'
-import {ImageMetadata, saveImageMetadataToDb} from '../models/ImageMetadata'
+import {isValidURL, uploadImageToCloudinary} from '../utils/helpers'
+import {ImageMetadata} from '../models/ImageMetadata'
 import {saveCompressingTask} from './taskService'
 import {ImageMetadataResponse} from '../types/ImageMetadataResponse'
 
@@ -12,6 +12,8 @@ interface UploadImageResponse {
 
 export const uploadImage = async (imageFileBuffer: Buffer): Promise<UploadImageResponse> => {
     const imageUrl = await uploadImageToCloudinary(imageFileBuffer)
+
+    isValidURL(imageUrl)
 
     const imageId = await saveImageMetadataToDb(imageUrl)
     const taskId= await saveCompressingTask(imageId)
@@ -25,19 +27,22 @@ export const uploadImage = async (imageFileBuffer: Buffer): Promise<UploadImageR
     })
 }
 
-export const getImageById = async (id: string): Promise<ImageMetadataResponse> => {
+export const getImageById = async (id: string): Promise<ImageMetadataResponse | undefined> => {
     return await ImageMetadata.findById(id)
         .then(image => {
-            return {
-                id: image?._id.toString(),
-                imageUrl: image?.imageUrl,
-                compressedUrl: image?.compressedUrl,
-                createdAt: image?.createdAt.toString(),
-            } as ImageMetadataResponse
+            if(image) {
+                return {
+                    id: image?._id.toString(),
+                    imageUrl: image?.imageUrl,
+                    compressedUrl: image?.compressedUrl,
+                    createdAt: image?.createdAt.toString(),
+                } as ImageMetadataResponse
+            }else{
+                return undefined
+            }
         })
         .catch((error) => {
-            console.log(error)
-            throw new Error('Failed to get image metadata from the database.')
+            throw new Error('Failed to get image from the database.' + error)
         })
 }
 
@@ -57,4 +62,14 @@ export const getImages = async (): Promise<ImageMetadataResponse[]> => {
             console.log(error)
             throw new Error('Failed to get images from the database.')
         })
+}
+
+const saveImageMetadataToDb = async (imageUrl: string): Promise<string> => {
+    try {
+        const imageMetadata = new ImageMetadata({ imageUrl })
+        return await imageMetadata.save().then(image => image._id.toString())
+    } catch (error) {
+        console.log(error)
+        throw new Error('Failed to save image metadata to the database.')
+    }
 }

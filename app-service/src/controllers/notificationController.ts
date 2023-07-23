@@ -3,7 +3,7 @@ import * as notificationService from '../services/notificationService'
 
 export const createSubscription = async (req: express.Request, res: express.Response) => {
     const { subscription } = req.body
-
+    console.log('Subscription received:', subscription)
     try {
         const result = await notificationService.createSubscription(subscription)
         return res.status(200).send(result)

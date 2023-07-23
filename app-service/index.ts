@@ -9,11 +9,14 @@ import {imageRouter} from './src/routes/imageRoutes'
 import {taskRouter} from './src/routes/taskRoutes'
 import {notificationRouter} from './src/routes/notificationRoutes'
 
+const cors = require('cors')
+
 config()
 
 const PORT = process.env.PORT || 3000
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 
 app.use('/image', imageRouter)
@@ -23,3 +26,4 @@ app.use('/notification', notificationRouter)
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
 })
+

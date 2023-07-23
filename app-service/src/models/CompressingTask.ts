@@ -17,13 +17,3 @@ const compressingTaskSchema = new Schema({
 })
 
 export const CompressingTask = mongoose.model('CompressingTask', compressingTaskSchema)
-
-export const saveCompressingTaskToDb = async (imageId: string) => {
-    try {
-        const compressingTask = new CompressingTask({ imageId })
-        return await compressingTask.save().then(task => task._id.toString())
-    } catch (error) {
-        console.log(error)
-        throw new Error('Failed to save compressing task to the database.')
-    }
-}

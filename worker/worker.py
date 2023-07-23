@@ -31,19 +31,20 @@ def worker_function():
         image_url, task_id, image_id = None, None, None
 
         try:
-            queue_message = redis_client.take_task_from_queue()
+            queue_item = redis_client.take_task_from_queue()
 
-            image_url, task_id, image_id = MessageProcessor.deserialize_message(queue_message)
+            if queue_item is not None:
+                image_url, task_id, image_id = MessageProcessor.deserialize_message(queue_item)
 
-            logging.info(f"Received message: {image_url} {task_id} {image_id}")
+                logging.info(f"Received message: {image_url} {task_id} {image_id}")
 
-            compressed_image_url = image_processor.process_image(image_url)
+                compressed_image_url = image_processor.process_image(image_url)
 
-            mongo_client.update_image_compressed_url(image_id, compressed_image_url)
-            mongo_client.update_task_status(task_id, 'completed')
+                mongo_client.update_image_compressed_url(image_id, compressed_image_url)
+                mongo_client.update_task_status(task_id, 'completed')
 
-            message = MessageProcessor.serialize_topic_message(compressed_image_url, task_id, image_id)
-            redis_client.publish_result(message)
+                message = MessageProcessor.serialize_topic_message(compressed_image_url, task_id, image_id)
+                redis_client.publish_result(message)
         except (ProcessImageError, UnknownProcessImageError, DeserializeMessageError) as e:
             logging.error(e)
             mongo_client.update_task_status(task_id, 'failed')
