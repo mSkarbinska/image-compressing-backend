@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  nginx_reverse_proxy:
+    image: custom_nginx
+    build:
+      context: ./nginx-proxy
+    ports:
+      - "80:80"
+    depends_on:
+      - app_service
+    networks:
+      - my_network
+
+  app_service:
+    image: app_service
+    build:
+      context: ./app-service
+    networks:
+      - my_network
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - my_network
+
+  worker:
+    image: worker
+    build:
+      context: ./worker
+    networks:
+      - my_network
+
+  client:
+    image: client
+    build:
+      context: ./client
+
+networks:
+  my_network:
