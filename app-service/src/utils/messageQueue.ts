@@ -1,5 +1,6 @@
 import { redisQueueClient } from './redisSetup'
 import {config} from 'dotenv'
+import {logger} from './logger'
 config()
 
 const queueName = process.env.REDIS_QUEUE_NAME || 'queue'
@@ -14,9 +15,9 @@ export const sendMessageToQueue =  (message: QueueMessage) => {
     const messageString = JSON.stringify(message)
     redisQueueClient.lpush(queueName, messageString, (err: any) => {
         if (err) {
-          console.error('Error sending message to Redis queue:', err)
+          logger.error('Error sending message to Redis queue:', err)
         } else {
-          console.log('Message sent to Redis queue:', message)
+            logger.info('Message sent to Redis queue:', message)
         }
       })
 }

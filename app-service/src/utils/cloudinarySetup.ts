@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv'
 import {v2 as cloudinary} from 'cloudinary'
+import {logger} from './logger'
 dotenv.config()
 
 function initializeCloudinary() {
@@ -9,9 +10,9 @@ function initializeCloudinary() {
             api_key: process.env.CLOUDINARY_API_KEY,
             api_secret: process.env.CLOUDINARY_API_SECRET
         })
-        console.log('Connected to Cloudinary')
+        logger.info('Cloudinary initialized.')
     } catch (error) {
-        console.error('Error connecting to Cloudinary:', error)
+        logger.error('Cloudinary failed to initialize.', error)
     }
 }
 

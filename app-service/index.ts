@@ -2,12 +2,13 @@ import './src/utils/redisSetup'
 import './src/utils/cloudinarySetup'
 import './src/utils/mongoSetup'
 
-import express from 'express'
+import express, {NextFunction} from 'express'
 import {config} from 'dotenv'
 
 import {imageRouter} from './src/routes/imageRoutes'
 import {taskRouter} from './src/routes/taskRoutes'
 import {notificationRouter} from './src/routes/notificationRoutes'
+import {logger} from './src/utils/logger'
 
 const cors = require('cors')
 
@@ -23,7 +24,15 @@ app.use('/image', imageRouter)
 app.use('/task', taskRouter)
 app.use('/notification', notificationRouter)
 
+
+app.use((err: Error, req: express.Request, res: express.Response) => {
+  logger.error('Unknown error: ' + err)
+
+  const errorMessage = 'Something went wrong. Please try again later.'
+  res.status(500).json({ error: errorMessage })
+})
+
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`)
+  logger.info(`Server is running on port ${PORT}`)
 })
 

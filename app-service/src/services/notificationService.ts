@@ -3,6 +3,7 @@ import webpush, {PushSubscription} from 'web-push'
 import {redisTopicClient} from '../utils/redisSetup'
 import {PushNotificationMessage} from '../types/PushNotificationMessage'
 import {isValidURL} from '../utils/helpers'
+import {logger} from '../utils/logger'
 
 config()
 
@@ -12,38 +13,36 @@ webpush.setVapidDetails('mailto:' + process.env?.WEBPUSH_MAIL,
 
 const subscriptions: PushSubscription[] = []
 
-console.log(subscriptions)
 export const createSubscription = async (subscription: PushSubscription) => {
     if(!subscriptions.includes(subscription) && subscription.endpoint !== undefined) {
         subscriptions.push(subscription)
-        console.log('Subscription created:', subscription)
+        logger.info('Subscription created:', subscription)
     }
     return await webpush.sendNotification(subscription, JSON.stringify({
         title: 'Hello from server!',
-        body: 'I am ready to compress your images.'
-    }))
-        .then(
-            () => {
-                console.log('Notification sent.')
-            }
-        ).catch((err) => {
-        console.log('Sending notification via web-push failed.', err)
+        body: 'I am ready to compress your images.'}))
+        .then(() => {
+                logger.info(`Notification sent to ${subscription.endpoint}`)
+            })
+        .catch((err) => {
+        logger.error(`Sending notification to ${subscription.endpoint} failed.`, err)
     })
 }
 
 export const sendNotification = async (message: PushNotificationMessage) => {
     for (const subscription of subscriptions) {
         webpush.sendNotification(subscription, JSON.stringify(message)).catch((err) => {
-            console.log('Sending notification via web-push failed.', err)
+            logger.error(`Sending notification to ${subscription.endpoint} failed.`, err)
         })
     }
 }
 
 redisTopicClient.on('message', (channel: string, message: string) => {
-    console.log('Message received:', message)
+    logger.info(`Received message from channel ${channel}: ${message}`)
+
     sendNotification(prepareMessage(message))
-        .then(() => console.log('Notification sent.'))
-        .catch((err) => console.log('Sending notification failed.',err))
+        .then(() => logger.info(`Notification sent to all subscribers.`))
+        .catch((err) => logger.error(`Sending notification message [${message}] to all subscribers failed.`, err))
 })
 
 
@@ -53,9 +52,13 @@ const prepareMessage = (message: string): PushNotificationMessage => {
 
     isValidURL(compressedUrl)
 
-    return {
+    const messageToSubscribers = {
         title: 'Image compressed!',
         body: 'Your image is ready. Click here to see it.',
         url: compressedUrl
     }
+
+    logger.info(`Message prepared for subscribers: ${JSON.stringify(messageToSubscribers)}`)
+
+    return messageToSubscribers
 }

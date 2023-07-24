@@ -1,12 +1,12 @@
 import {mongoose} from '@typegoose/typegoose'
 import {config} from 'dotenv'
+import {logger} from './logger'
 config()
 
 mongoose.connect(
     process.env.MONGODB_URI as string,
 ).then(() =>
-    console.log('Connected to MongoDbClient')
+    logger.info('Connected to MongoDbClient.')
 ).catch(e => {
-    console.log(e)
-    console.log('Failed to connect to MongoDbClient')
+    logger.error('Failed to connect to MongoDbClient.', e)
 })
