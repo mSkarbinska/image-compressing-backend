@@ -11,6 +11,7 @@ jest.mock('../../utils/messageQueue', () => ({
 
 jest.mock('../../utils/helpers', () => ({
     uploadImageToCloudinary: jest.fn((buffer: Buffer) => Promise.resolve('https://cloudinary.com/image.jpg')),
+    isValidURL: jest.fn().mockImplementation((url: string) => true),
 }))
 
 

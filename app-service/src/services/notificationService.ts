@@ -1,4 +1,5 @@
 import {config} from 'dotenv'
+// @ts-ignore
 import webpush, {PushSubscription} from 'web-push'
 import {redisTopicClient} from '../utils/redisSetup'
 import {PushNotificationMessage} from '../types/PushNotificationMessage'
