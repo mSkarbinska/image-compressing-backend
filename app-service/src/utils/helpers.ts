@@ -33,6 +33,6 @@ export const isValidURL = (inputURL: string): boolean => {
         return !!parsedURL
     } catch (error) {
         logger.error(error)
-        throw new Error('Invalid URL string')
+        throw new Error(`Invalid URL string: ${inputURL}`)
     }
 }

@@ -16,7 +16,7 @@ class RedisClient:
                                   single_connection_client=False,
                                   retry_on_error=True)
         try:
-            self.client.ping()
+            print(self.client.ping())
         except Exception as e:
             raise RedisConnectionError(e)
 

@@ -8,7 +8,10 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
-    host: true,
+    hmr: {
+        clientPort: 5005,
+    },
+    host: "0.0.0.0",
     strictPort: true,
     port: 5005,
   }

@@ -11,6 +11,12 @@ import logging
 
 load_dotenv()
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s]: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[logging.FileHandler("logs/app.log"), logging.StreamHandler()]
+)
 
 def worker_function():
     try:
@@ -56,6 +62,8 @@ def worker_function():
 
 
 if __name__ == '__main__':
+    logging.info("Worker starting...")
+
     try:
         worker_function()
     except KeyboardInterrupt:

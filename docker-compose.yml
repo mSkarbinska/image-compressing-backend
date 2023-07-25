@@ -5,10 +5,10 @@ services:
     image: custom_nginx
     build:
       context: ./nginx-proxy
+    env_file:
+      - .env
     ports:
-      - "80:80"
-    depends_on:
-      - app_service
+      - "${NGINX_PORT}:${NGINX_PORT}"
     networks:
       - my_network
 
@@ -16,13 +16,23 @@ services:
     image: app_service
     build:
       context: ./app-service
+    volumes:
+      - ./app-service:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    depends_on:
+      - redis
     networks:
       - my_network
 
   redis:
     image: redis
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    command: ["redis-server", "--bind", "${REDIS_HOST}", "--port", "${REDIS_PORT}"]
+    env_file:
+      - .env
     networks:
       - my_network
 
@@ -30,6 +40,12 @@ services:
     image: worker
     build:
       context: ./worker
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    volumes:
+      - ./worker:/app
     networks:
       - my_network
 
@@ -37,6 +53,13 @@ services:
     image: client
     build:
       context: ./client
+    env_file:
+      - .env
+    ports:
+        - "${CLIENT_PORT}:${CLIENT_PORT}"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
 
 networks:
   my_network:

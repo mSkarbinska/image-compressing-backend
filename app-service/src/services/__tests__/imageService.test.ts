@@ -33,7 +33,7 @@ describe('uploadImage', () => {
             throw new Error('Failed to upload image to cloudinary.')
         })
 
-        await expect(uploadImage(imageFileBuffer)).rejects.toThrow('Failed to upload image to cloudinary.')
+        await expect(uploadImage(imageFileBuffer)).rejects.toThrowError('Failed to upload image to cloudinary.')
     })
 })
 

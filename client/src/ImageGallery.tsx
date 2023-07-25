@@ -5,7 +5,7 @@ import ImageGrid from "./ImageGrid.tsx";
 
 
 const ImageGallery: FC = () => {
-    const [images, setImages] = useState<Image[]>([
+    const [images] = useState<Image[]>([
         { id: 1, url: './public/image1.jpg', category: Category.FullSize },
         { id: 2, url: './public/image1.jpg', category: Category.FullSize },
         { id: 3, url: './public/image1.jpg', category: Category.FullSize },

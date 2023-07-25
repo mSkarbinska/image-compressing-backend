@@ -27,7 +27,7 @@ describe('saveCompressingTask', () => {
 
         CompressingTask.prototype.save = jest.fn().mockRejectedValue(new Error('Failed to save to the database.'))
 
-        await expect(saveCompressingTask(imageId)).rejects.toThrow('Failed to save compressing task to the database.')
+        await expect(saveCompressingTask(imageId)).rejects.toThrowError('Failed to save compressing task to the database.')
         expect(CompressingTask.prototype.save).toHaveBeenCalledTimes(1)
         expect(CompressingTask.prototype.save).toHaveBeenCalledWith()
     })
@@ -62,7 +62,7 @@ describe('getCompressingTaskById', () => {
 
         CompressingTask.findById = jest.fn().mockResolvedValue(null)
 
-        await expect(getCompressingTaskById(taskId)).rejects.toThrow('Compressing task not found in the database.')
+        await expect(getCompressingTaskById(taskId)).rejects.toThrowError('Compressing task not found in the database.')
         expect(CompressingTask.findById).toHaveBeenCalledTimes(1)
         expect(CompressingTask.findById).toHaveBeenCalledWith(taskId)
     })
@@ -91,7 +91,7 @@ describe('getCompressingTaskStatusById', () => {
 
         CompressingTask.findById = jest.fn().mockResolvedValue(null)
 
-        await expect(getCompressingTaskStatusById(taskId)).rejects.toThrow('Compressing task status not found in the database.')
+        await expect(getCompressingTaskStatusById(taskId)).rejects.toThrowError('Compressing task status not found in the database.')
         expect(CompressingTask.findById).toHaveBeenCalledTimes(1)
         expect(CompressingTask.findById).toHaveBeenCalledWith(taskId, { status: 1 })
     })
