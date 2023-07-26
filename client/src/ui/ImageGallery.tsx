@@ -16,8 +16,8 @@ const ImageGallery: FC = () => {
     return (
         <div>
             <div>
-                <button onClick={() => changeCategory(Category.FullSize)}>{Category.FullSize.toString()}</button>
-                <button onClick={() => changeCategory(Category.Compressed)}>{Category.Compressed.toString()}</button>
+                <button onClick={() => changeCategory(Category.FullSize)}>{Category.FullSize.toString()} 💯</button>
+                <button onClick={() => changeCategory(Category.Compressed)}>{Category.Compressed.toString()} ✨</button>
             </div>
             {imagesData && imagesData?.length > 0 ? <ImageGrid images={imagesData} category={currentCategory}/> :
                 <div>No images 😢 Upload some above! ⬆️</div>}

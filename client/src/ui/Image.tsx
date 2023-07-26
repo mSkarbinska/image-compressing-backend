@@ -1,4 +1,5 @@
 import {ImageListItem} from '@mui/material'
+import React from 'react'
 
 interface Props {
     url: string,
@@ -6,13 +7,19 @@ interface Props {
 }
 
 
-const Image = ({url, id}: Props) => <ImageListItem key = {id}>
-    <img
-        src={url}
-        loading="lazy"
-        alt={id}
-    />
-</ImageListItem>
+const Image = ({url, id}: Props) => {
+    const [hasError, setHasError] = React.useState(false)
 
+    const handleImageError = () => {
+        setHasError(true)
+    }
+    return !hasError ?
+        <ImageListItem key={id}>
+        <img src={url}
+            loading="lazy"
+            onError={handleImageError}
+        />
+    </ImageListItem>: null
+}
 
 export default Image

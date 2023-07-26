@@ -12,7 +12,6 @@ export const useGetImagesData = (): UseQueryResult<ImageData[]> => useQuery(['im
         })
 
 
-
 export const useUploadImage = () => {
     return useMutation(async (image: File) => {
         try {
