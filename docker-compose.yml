@@ -16,18 +16,18 @@ services:
     image: app_service
     build:
       context: ./app-service
-    volumes:
-      - ./app-service:/app
-      - /app/node_modules
     env_file:
       - .env
+    volumes:
+      - ./app-service:/app-service
+      - /app-service/node_modules
     depends_on:
       - redis
     networks:
       - my_network
 
   redis:
-    image: redis
+    image: redis:7.2-rc-alpine
     ports:
       - "${REDIS_PORT}:${REDIS_PORT}"
     command: ["redis-server", "--bind", "${REDIS_HOST}", "--port", "${REDIS_PORT}"]
@@ -45,7 +45,7 @@ services:
     depends_on:
       - redis
     volumes:
-      - ./worker:/app
+      - ./worker:/worker
     networks:
       - my_network
 
@@ -55,11 +55,13 @@ services:
       context: ./client
     env_file:
       - .env
-    ports:
-        - "${CLIENT_PORT}:${CLIENT_PORT}"
     volumes:
-      - ./client:/app
-      - /app/node_modules
+      - ./client:/client
+      - /client/node_modules
+    tty: true
+    stdin_open: true
+    ports:
+      - "${CLIENT_PORT}:${CLIENT_PORT}"
 
 networks:
   my_network:

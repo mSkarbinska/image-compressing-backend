@@ -51,10 +51,10 @@ export const getImages = async (): Promise<ImageMetadataResponse[]> => {
         .then(images => {
             return images.map(image => {
                 return {
-                    id: image?._id.toString(),
-                    imageUrl: image.imageUrl,
-                    compressedUrl: image.compressedUrl,
-                    createdAt: image.createdAt.toString(),
+                    id: image?._id?.toString(),
+                    imageUrl: image?.imageUrl,
+                    compressedUrl: image?.compressedUrl,
+                    createdAt: image?.createdAt?.toString(),
                 } as ImageMetadataResponse
             })
         })

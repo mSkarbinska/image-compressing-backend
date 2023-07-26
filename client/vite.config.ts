@@ -11,7 +11,7 @@ export default defineConfig({
     hmr: {
         clientPort: 5005,
     },
-    host: "0.0.0.0",
+    host: '0.0.0.0',
     strictPort: true,
     port: 5005,
   }

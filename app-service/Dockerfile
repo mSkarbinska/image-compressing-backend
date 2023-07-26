@@ -1,12 +1,14 @@
 FROM node:18-alpine
 
-WORKDIR /app
+WORKDIR /app-service
 
-COPY ["package.json", "package-lock.json*", "./"]
+COPY package.json .
 
 RUN npm install
 
 RUN npm install -g ts-node
+
+RUN npm install -g nodemon
 
 COPY . .
 
