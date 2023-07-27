@@ -56,3 +56,11 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.dropzone {
+  height: 150px;
+  border-style: dashed;
+  border-color: #474747;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

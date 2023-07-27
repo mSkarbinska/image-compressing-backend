@@ -10,7 +10,6 @@ import {taskRouter} from './src/routes/taskRoutes'
 import {notificationRouter} from './src/routes/notificationRoutes'
 import {logger} from './src/utils/logger'
 
-const cors = require('cors')
 
 config()
 
@@ -18,7 +17,6 @@ const PORT = process.env.PORT || 3000
 const app = express()
 
 app.use(express.json())
-app.use(cors())
 
 app.use('/images', imageRouter)
 app.use('/tasks', taskRouter)

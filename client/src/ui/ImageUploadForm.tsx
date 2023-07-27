@@ -1,6 +1,6 @@
 import Dropzone, {FileWithPath} from 'react-dropzone'
 import {useUploadImage} from '../hooks/useImages.ts'
-
+import './index.css'
 const ImageUploadForm = () => {
     const {mutate: uploadImage} = useUploadImage()
     const onDrop = (acceptedFiles: FileWithPath[]) => {
@@ -12,9 +12,9 @@ const ImageUploadForm = () => {
         <div>
             <Dropzone onDrop={onDrop}>
                 {({ getRootProps, getInputProps }) => (
-                    <div {...getRootProps()}>
+                    <div {...getRootProps()} className="dropzone">
                         <input {...getInputProps()} />
-                        <p>Drag'n'drop an image here or click to select an image 📷</p>
+                        <h3>Drag'n'drop an image here or click to select an image 📷</h3>
                     </div>
                 )}
             </Dropzone>
