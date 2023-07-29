@@ -2,14 +2,14 @@ import './src/utils/redisSetup'
 import './src/utils/cloudinarySetup'
 import './src/utils/mongoSetup'
 
-import express, {NextFunction} from 'express'
+import express from 'express'
 import {config} from 'dotenv'
 
 import {imageRouter} from './src/routes/imageRoutes'
 import {taskRouter} from './src/routes/taskRoutes'
 import {notificationRouter} from './src/routes/notificationRoutes'
 import {logger} from './src/utils/logger'
-
+import cors from 'cors'
 
 config()
 
@@ -17,6 +17,7 @@ const PORT = process.env.PORT || 3000
 const app = express()
 
 app.use(express.json())
+app.use(cors())
 
 app.use('/images', imageRouter)
 app.use('/tasks', taskRouter)

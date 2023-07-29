@@ -29,8 +29,6 @@ services:
 
   redis:
     image: redis:7.2-rc-alpine
-    ports:
-      - "${REDIS_PORT}:${REDIS_PORT}"
     command: ["redis-server", "--bind", "${REDIS_HOST}", "--port", "${REDIS_PORT}"]
     env_file:
       - .env
