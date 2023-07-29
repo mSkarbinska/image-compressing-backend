@@ -14,7 +14,7 @@ const ImageUploadForm = () => {
                 {({ getRootProps, getInputProps }) => (
                     <div {...getRootProps()} className="dropzone">
                         <input {...getInputProps()} />
-                        <h3>Drag'n'drop an image here or click to select an image 📷</h3>
+                        <h3 className="dropzone-text">Drag'n'drop an image here or click to select an image 📷</h3>
                     </div>
                 )}
             </Dropzone>

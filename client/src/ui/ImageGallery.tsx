@@ -11,7 +11,7 @@ const ImageGallery: FC = () => {
             <div>
             </div>
             {imagesData && imagesData?.length > 0 ? <ImageGrid images={imagesData}/> :
-                <div>No images 😢 Upload some above! ⬆️</div>}
+                <h3>No images 😢 Upload some above! ⬆️</h3>}
         </div>
     )
 }
