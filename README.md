@@ -1,9 +1,11 @@
-# Image compressing service
+# Image compression service
 ## Description
-This project consists of a compressing API built with Node.js and a Python worker for file processing.
+This project demonstrates how to build and dockerize scalable image compressing service.
+It consists of a compressing API built with Node.js and a Python worker for file processing.
 The communication between the API and the worker is established using Redis queues and topics. \
 For storing images and their compressed versions, the API uses free tier alternative to Amazon S3 - [Cloudinary](https://cloudinary.com/). 
-
+Images data is stored in MongoDB. 
+Nginx is used as a reverse proxy for the API. 
 ## Requirements
 - [Node.js](https://nodejs.org/en/)
 - [Python 3.8](https://www.python.org/downloads/release/python-380/)
@@ -16,7 +18,7 @@ For storing images and their compressed versions, the API uses free tier alterna
 
 ## How to run it with Docker Compose
 1. Clone the repository \
-```git clone https://github.com/mSkarbinska/image-compressing-service```
+```git clone https://github.com/mSkarbinska/image-compression-service```
 2. Create a `.env` file in the root directory of the project and fill it with the following variables:
 ```DEV=true
 PORT=3003
@@ -47,20 +49,17 @@ The server exposes several endpoints to interact with the image compressing serv
 This endpoint allows clients to upload full-size images to the server. The server then sends the images to Cloudinary for storage and adds a compressing task to the Redis queue. This asynchronous processing approach ensures that image compression tasks are decoupled from the image upload process, enabling better scalability and responsiveness.
 
     GET /images
-This endpoint provides a list of all images' metadata stored in the database. Clients can use this endpoint to retrieve information about the images available in the system, including their URLs and compression status.
+Provides a list of all images' metadata stored in the database. Clients can use this endpoint to retrieve information about the images available in the system, including their URLs and compression status.
 
     GET /images/:id
 Clients can use this endpoint to obtain detailed information about a specific image based on its unique ID. This information includes the image's URL and compressed version URL, if available.
 
     GET /tasks/:id
-This endpoint returns data related to a single compressing task based on its unique ID. Clients can use this endpoint to track the progress and details of ongoing or completed image compression tasks.
+Returns data related to a single compressing task based on its unique ID. Clients can use this endpoint to track the progress and details of ongoing or completed image compression tasks.
 
     GET /tasks/:id/status
-This endpoint provides the status of a specific compressing task based on its unique ID. Clients can use this endpoint to check whether a particular task is pending, completed, completed with errors, or has failed.
+Provides the status of a specific compressing task based on its unique ID. Clients can use this endpoint to check whether a particular task is pending, completed, completed with errors, or has failed.
 
-**MVC Architecture:**
-The server is structured using the Model-View-Controller (MVC) architectural pattern, which helps organize code and promote maintainability.
-![mvc.png](media%2Fmvc.png)
 
 ## MongoDB
 ### Models:
